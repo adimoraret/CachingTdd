@@ -26,7 +26,9 @@ Since this is a failing test, we're forced to write a simple production code tha
 ## Empty cache -> get new value.
 The first test I'm thinking is that we have an empty cache and we need get a fresh new value.
 This means we need a `Get` method where we can pass an identifer and some other method that will be called to give me the new value when identifier doesn't exist.
+
 ![should get new value when cache is empty failling test](images/ShouldGetNewValueWhenCacheIsEmpty-Failing.png)
+
 Since we want to make this cache generic, we don't know what function will be used to get values, so we'll defind the shape of it. It's a function that gets a string as input and it returns any object.
 This test, the way it is, forces me to create the production Get method definition. So our SimpleCache class would look like this:
 ```csharp
@@ -51,8 +53,10 @@ public void ShouldGetNewValueWhenCacheIsEmpty()
 
   Assert.That(result, Is.EqualTo(value));
 }
+
 ```
 ![should get new value when cache is empty run fails](images/ShouldGetNewValueWhenCacheIsEmpty-Run-Fails.png)
+
 What's the easiest way to make it pass? Well, call `getNewValue` function and return its result.
 ```csharp
 public T Get(string key, Func<string, T> getNewValue)
@@ -60,8 +64,10 @@ public T Get(string key, Func<string, T> getNewValue)
   return getNewValue(key);
 }
 ```
-And test are passing!
+And tests are passing!
+
 ![should get new value when cache is empty run fails](images/ShouldGetNewValueWhenCacheIsEmpty-Run-Passes.png)
+
 Now, the test class has some duplicate code which we can refactor and the result would be this:
 ![should get new value when cache is empty after refactoring](images/ShouldGetNewValueWhenCacheIsEmpty-After-Refactoring.png)
 
@@ -100,6 +106,7 @@ public class SimpleCache
 }
 ```
 ![should not refresh value when it exists in cache run passes](images/ShouldNotRefreshValueWhenItExistsInCache-Run-Passes.png)
+
 Now we can refactor. It would make sense to add the generic type as class level and use it as a type for the `_value` property. So we can change first our tests to make them decide what is the type of values we're goint to store in our simple cache.
 ```csharp
 private SimpleCache<object> _sut;
@@ -139,6 +146,7 @@ public class SimpleCache<T>
 }
 ```
 Now, making sure our tests still pass.
+
 ![should not refresh value when it exists in cache run passes](images/ShouldNotRefreshValueWhenItExistsInCache-Run-Passes.png)
 
 ## Getting another value from cache by a different key.
@@ -163,6 +171,7 @@ public void ShouldAddTwoItemsToCache()
 ``` 
 And when we run the test, we'll have one failed test.
 ![should add two items to cache run fails](images/ShouldAddTwoItemsToCache-Run-Fails.png)
+
 Now, let's try to implement. Obviously, our production code doesn't store the value retrieved by the function based on the key. One way to store values by keys, is to use a Dictionary.
 ```csharp
 public class SimpleCache<T>
@@ -179,6 +188,7 @@ public class SimpleCache<T>
 }
 ```
 Now, let's run the tests: All tests pass!
+
 ![should add two items to cache run pass](images/ShouldAddTwoItemsToCache-Run-Passes.png)
 
 ## Concurrent calls
@@ -204,11 +214,11 @@ public void ShouldNotCallTheGetNewValueMethodMultipleTimes()
 }
 ```
 ![should not call the getNewValue method multiple times run fails](images/ShouldNotCallTheGetNewValueMethodMultipleTimes-Run-Fails.png)
-Of course, test fails but not with the expected reason. It fails because adding multiple times the same key to a dictionary, it causes an exception:
 
-`
+Of course, test fails but not with the expected reason. It fails because adding multiple times the same key to a dictionary, it causes an exception:
+```
 An item with the same key has already been added. Key: key
-`
+```
 One easy way to fix this, is to wrap the `_cachedValues.Add(key, value);` in a `try/catch` block and then running again the test.
 ```csharp
  public T Get(string key, Func<string, T> getNewValue)
@@ -226,7 +236,9 @@ One easy way to fix this, is to wrap the `_cachedValues.Add(key, value);` in a `
 }
 ```
 Now let's run the tests.
+
 ![should not call the getNewValue method multiple times run fails again](images/ShouldNotCallTheGetNewValueMethodMultipleTimes-Run-Fails.png)
+
 Test fails again, but this time for the reason specified in the assertion:
 ```
   Expected: 1
@@ -258,6 +270,7 @@ public class SimpleCache<T>
 }
 ```
 ![should not call the getNewValue method multiple times run passes](images/ShouldNotCallTheGetNewValueMethodMultipleTimes-Run-Passes.png)
+
 We're under green state, so we can refactor and remove the try/catch block. Refactored code would look like this:
 ```csharp
 public class SimpleCache<T>
