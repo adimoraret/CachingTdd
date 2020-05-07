@@ -11,12 +11,16 @@ public void Nothing()
 }
 ```
 Let's run the tests
+
 ![nothing unit test](images/Nothing.png)
 
 ## Create a test that forces me to create SUT
 Since we've proved we have a working pipeline, let's delete the first dummy test and let's create a test that forces us to create our System Under Test (which is SimpleCache class).
+
 ![should create simple cache failing test](images/ShouldCreateSimpleCache-Failing.png)
+
 Since this is a failing test, we're forced to write a simple production code that makes this test to pass.
+
 ![should create simple cache failing test](images/ShouldCreateSimpleCache-Pass.png)
 
 ## Empty cache -> get new value.
@@ -277,23 +281,3 @@ public class SimpleCache<T>
 ```
 Running again the tests to make sure everything is good:
 ![should not call the getNewValue method multiple times run passes again](images/ShouldNotCallTheGetNewValueMethodMultipleTimes-Run-Passes.png)
-
-## SimpleCache - single cache instance ##
-Right now our cache dictionary from SimpleCache is generated everytime we create a new SimpleCache instance. Let's say we want to change that so no matter how many instances we create, we'll have the same cache. That means we'll need to make the dictionary static. But first, let's write a failling test. 
-```csharp
-[Test]
-public void ShouldHaveIdenticalCacheDataForEachInstanceOfSimpleCache()
-{
-  var myvalue1 = new object();
-  Func<string, object> getNewValue1 = (key) => myvalue1;
-
-  var firstValue = _sut.Get("key1", getNewValue1);
-
-  var secondInstance = new SimpleCache<object>();
-  var secondValue = secondInstance.Get("key1", (key) => new object());
-
-  Assert.That(firstValue, Is.EqualTo(secondValue));
-}
-```
-Let's run the tests:
-![should have identical cache data for each instance of simple cache again](images/ShouldHaveIdenticalCacheDataForEachInstanceOfSimpleCache-Run-Fails.png)
