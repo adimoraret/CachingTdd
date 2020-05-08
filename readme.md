@@ -89,7 +89,9 @@ public void ShouldNotRefreshValueWhenItExistsInCache()
 }
 ```
 And this test with fail with our current production code.
+
 ![should not refresh value when it exists in cache run fails](images/ShouldNotRefreshValueWhenItExistsInCache-Run-Fails.png)
+
 The simplest way we could fix this is to save the returned value into a class property and return it next time the `Get` method gets called.
 ```csharp
 public class SimpleCache
@@ -170,6 +172,7 @@ public void ShouldAddTwoItemsToCache()
 }
 ``` 
 And when we run the test, we'll have one failed test.
+
 ![should add two items to cache run fails](images/ShouldAddTwoItemsToCache-Run-Fails.png)
 
 Now, let's try to implement. Obviously, our production code doesn't store the value retrieved by the function based on the key. One way to store values by keys, is to use a Dictionary.
@@ -293,4 +296,5 @@ public class SimpleCache<T>
 }
 ```
 Running again the tests to make sure everything is good:
+
 ![should not call the getNewValue method multiple times run passes again](images/ShouldNotCallTheGetNewValueMethodMultipleTimes-Run-Passes.png)
